@@ -57,6 +57,14 @@ impl Vec3 {
         return *v / v.length()
     }
 
+    pub fn write_color(&self) -> String {
+        format!("{} {} {}",
+            (255.999 * self.x()) as u32,
+            (255.999 * self.y()) as u32,
+            (255.999 * self.z()) as u32
+        )
+    }
+
 }
 
 impl ops::AddAssign for Vec3 {
