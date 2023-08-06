@@ -7,21 +7,15 @@ mod color;
 mod point3;
 
 fn main() {
-    let mut pt1: Point3 = Point3::new(1.0,2.0,3.0);
-    let pt2: Point3 = Point3::new(5.0, 6.0, 7.0);
-    pt1 += pt2;
-    println!("{:?}", pt1);
-    pt1 *= 2.0;
-    pt1 = -pt1;
-    println!("{:?}", pt1);
-    let x = pt1[0];
-    println!("pt1[0]: {}", x);
-    pt1[0] = 10.0;
-    println!("{:?}", pt1);
-    pt1 /= 10.0;
-    println!("{:?}", pt1);
+    let pt1: Vec3 = Vec3::new(1.0,2.0,3.0);
+    let pt2: Vec3 = Vec3::new(5.0, 6.0, 7.0);
+    println!("{}", pt1 + pt2);
+    println!("{}", pt1 - pt2);
+    println!("{}", pt1 * 2.0);
+    println!("{}", 2.0 * pt1);
+    println!("{}", pt1 * pt2);
+    println!("{}", pt1 / 10.0);
 
-    let mut c:Vec3 = Vec3::new_default();
     // let image_height: u32 = 256;
     // let image_width: u32 = 256;
 
