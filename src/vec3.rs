@@ -5,7 +5,7 @@ use std::ops::IndexMut;
 
 #[derive(Debug)]
 pub struct Vec3 {
-    e: [f64;3],
+    pub e: [f64;3],
 }
 
 impl Vec3 {

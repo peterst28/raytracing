@@ -1,10 +1,14 @@
 use crate::vec3::Vec3;
+use crate::color::Color;
+use crate::point3::Point3;
 
 mod vec3;
+mod color;
+mod point3;
 
 fn main() {
-    let mut pt1 = Vec3::new(1.0,2.0,3.0);
-    let pt2: Vec3 = Vec3::new(5.0, 6.0, 7.0);
+    let mut pt1: Point3 = Point3::new(1.0,2.0,3.0);
+    let pt2: Point3 = Point3::new(5.0, 6.0, 7.0);
     pt1 += pt2;
     println!("{:?}", pt1);
     pt1 *= 2.0;
