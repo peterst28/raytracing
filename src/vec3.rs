@@ -211,3 +211,6 @@ impl std::fmt::Display for Vec3 {
         write!(f, "{} {} {}", self.e[0], self.e[1], self.e[2])
     }
 }
+
+type Color = Vec3;
+type Point3 = Vec3;
