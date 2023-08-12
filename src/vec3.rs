@@ -212,5 +212,5 @@ impl std::fmt::Display for Vec3 {
     }
 }
 
-type Color = Vec3;
-type Point3 = Vec3;
+pub type Color = Vec3;
+pub type Point3 = Vec3;
