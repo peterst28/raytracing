@@ -7,7 +7,21 @@ use crate::ray::Ray;
 mod vec3;
 mod ray;
 
+fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> bool {
+    let oc = r.origin() - *center;
+    let a = Vec3::dot(&r.direction(), &r.direction());
+    let b = 2.0 * Vec3::dot(&oc, &r.direction());
+    let c = Vec3::dot(&oc, &oc) - radius * radius;
+    let discriminant = b*b - 4.0*a*c;
+    return discriminant >= 0.0;
+}
+
 fn ray_color(r: &Ray) -> Color {
+
+    if hit_sphere(&Point3::new(0.0,0.0,-1.0), 0.5, &r) {
+        return Color::new(1.0, 0.0, 0.0);
+    }
+
     let unit_direction = Vec3::unit_vector(&r.direction());
     let a = 0.5 * (unit_direction.y() + 1.0);
     return (1.0-a) * Color::new(1.0, 1.0, 1.0) + a * Color::new(0.5, 0.7, 1.0);
@@ -17,6 +31,7 @@ fn main() {
 
     // Image
     let aspect_ratio = 16.0 / 9.0;
+    // let aspect_ratio = 9.0 / 16.0;
     let image_width = 400;
 
     // Calculate the image height, and ensure that it's at least 1.
@@ -31,7 +46,7 @@ fn main() {
 
     let focal_length = 1.0;
     let viewport_height = 2.0;
-    let viewport_width = viewport_height * (image_width / image_height) as f64;
+    let viewport_width = viewport_height * (image_width as f64/ image_height as f64) as f64;
     let camera_center = Point3::new(0.0, 0.0, 0.0);
 
     // Calculate the vectors across the horizontal and down the vertical viewport edges.
@@ -51,7 +66,7 @@ fn main() {
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
 
-    for j in 0..image_height-1 {
+    for j in 0..image_height {
         eprintln!("Scanlines remaining: {}", image_height - j);
         for i in 0..image_width {
             let pixel_center = pixel00_loc 
@@ -60,6 +75,7 @@ fn main() {
             let ray_direction = pixel_center - camera_center;
             let r = Ray::new(camera_center, ray_direction);
             let pixel_color = ray_color(&r);
+            // println!("{},{} {}", i, j, pixel_color.write_color());
             println!("{}", pixel_color.write_color());
         }
     }
