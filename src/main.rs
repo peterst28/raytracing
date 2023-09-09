@@ -2,31 +2,23 @@ use crate::vec3::Vec3;
 use crate::vec3::Color;
 use crate::vec3::Point3;
 use crate::ray::Ray;
+use crate::hittable::Hittable;
+use crate::sphere::Sphere;
+use crate::hittable_list::HittableList;
 
 
 mod vec3;
 mod ray;
+mod hittable;
+mod sphere;
+mod hittable_list;
+mod rtweekend;
 
-fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
-    let oc = r.origin() - *center;
-    let a = r.direction().length_squared();
-    let half_b = Vec3::dot(&oc, &r.direction());
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = half_b*half_b - a*c;
+fn ray_color(r: &Ray, world: &HittableList) -> Color {
 
-    if discriminant < 0.0 {
-        return -1.0;
-    } else {
-        return (-half_b - discriminant.sqrt() ) / (a);
-    }
-}
-
-fn ray_color(r: &Ray) -> Color {
-
-    let t = hit_sphere(&Point3::new(0.0,0.0,-1.0), 0.5, &r);
-    if t > 0.0 {
-        let N = Vec3::unit_vector( &(r.at(t) - Vec3::new(0.0,0.0,-1.0)));
-        return 0.5 * Color::new(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
+    let (has_hit, rec) = world.hit(r, 0.0, rtweekend::INFINITY);
+    if has_hit {
+        return 0.5 * (rec.normal + Color::new(1.0,1.0,1.0))
     }
 
     let unit_direction = Vec3::unit_vector(&r.direction());
@@ -48,6 +40,18 @@ fn main() {
     } else {
         image_height
     };
+
+    // World
+
+    let mut world = HittableList::new_default();
+    world.add(Box::new(Sphere::new(
+        Point3::new(0.0, 0.0, -1.0),
+        0.5)
+    ));
+    world.add(Box::new(Sphere::new(
+        Point3::new(0.0, -100.5, -1.0),
+        100.0)
+    ));
 
     // Camera
 
@@ -81,7 +85,7 @@ fn main() {
                                         + (j as f64 * pixel_delta_v);
             let ray_direction = pixel_center - camera_center;
             let r = Ray::new(camera_center, ray_direction);
-            let pixel_color = ray_color(&r);
+            let pixel_color = ray_color(&r, &world);
             // println!("{},{} {}", i, j, pixel_color.write_color());
             println!("{}", pixel_color.write_color());
         }
