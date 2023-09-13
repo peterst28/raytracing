@@ -5,6 +5,7 @@ use crate::ray::Ray;
 use crate::hittable::Hittable;
 use crate::sphere::Sphere;
 use crate::hittable_list::HittableList;
+use crate::interval::Interval;
 
 
 mod vec3;
@@ -13,12 +14,13 @@ mod hittable;
 mod sphere;
 mod hittable_list;
 mod rtweekend;
+mod interval;
 
 fn ray_color(r: &Ray, world: &HittableList) -> Color {
 
-    let (has_hit, rec) = world.hit(r, 0.0, rtweekend::INFINITY);
+    let (has_hit, rec) = world.hit(r, &Interval::new(0.0, rtweekend::INFINITY));
     if has_hit {
-        return 0.5 * (rec.normal + Color::new(1.0,1.0,1.0))
+        return 0.5 * (rec.normal + Color::new(1.0,1.0,1.0));
     }
 
     let unit_direction = Vec3::unit_vector(&r.direction());
