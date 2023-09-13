@@ -3,6 +3,7 @@ use crate::vec3::Point3;
 
 // mod vec3;
 
+#[derive(Debug, Copy, Clone)]
 pub struct Ray {
     pub orig: Point3,
     pub dir: Vec3,

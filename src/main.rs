@@ -14,7 +14,6 @@ mod interval;
 mod camera;
 
 fn main() {
-
     let mut world = HittableList::new_default();
     world.add(Box::new(Sphere::new(
         Point3::new(0.0, 0.0, -1.0),
@@ -29,6 +28,7 @@ fn main() {
 
     camera.aspect_ratio = 16.0 / 9.0;
     camera.image_width = 400;
+    camera.samples_per_pixel = 100;
 
     camera.render(&world);
 }

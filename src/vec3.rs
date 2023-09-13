@@ -2,6 +2,7 @@ use std::ops;
 use std::ops::Neg;
 use std::ops::Index;
 use std::ops::IndexMut;
+use crate::interval::Interval;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
@@ -57,13 +58,34 @@ impl Vec3 {
         return *v / v.length()
     }
 
-    pub fn write_color(&self) -> String {
+    pub fn write_color(&self, samples_per_pixel: i32) -> String {
+
+        let mut r = self.x();
+        let mut g = self.y();
+        let mut b = self.z();
+
+        let scale = 1.0 / (samples_per_pixel as f64);
+        r *= scale;
+        g *= scale;
+        b *= scale;
+
         format!("{} {} {}",
-            (255.999 * self.x()) as u32,
-            (255.999 * self.y()) as u32,
-            (255.999 * self.z()) as u32
+            (256.0 * Vec3::INTENSITY.clamp(r)) as u32,
+            (256.0 * Vec3::INTENSITY.clamp(g)) as u32,
+            (256.0 * Vec3::INTENSITY.clamp(b)) as u32
         )
+
+        // return format!("{} {} {}",
+        //     (256.0 * self.x()) as u32,
+        //     (256.0 * self.y()) as u32,
+        //     (256.0 * self.z()) as u32
+        // );
     }
+
+    const INTENSITY: Interval = Interval {
+        min: 0.0, 
+        max: 0.999
+    };
 
 }
 

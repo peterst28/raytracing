@@ -10,6 +10,7 @@ use crate::vec3::Point3;
 pub struct Camera {
     pub aspect_ratio: f64,
     pub image_width: i32,
+    pub samples_per_pixel: i32,
     image_height: i32,
     center: Point3,
     pixel00_loc: Point3,
@@ -22,6 +23,7 @@ impl Camera {
         return Camera {
             aspect_ratio: 1.0,
             image_width: 100,
+            samples_per_pixel: 10,
             image_height: 0,
             center: Point3::new_default(),
             pixel00_loc: Point3::new_default(),
@@ -42,16 +44,32 @@ impl Camera {
         for j in 0..self.image_height {
             eprintln!("Scanlines remaining: {}", self.image_height - j);
             for i in 0..self.image_width {
-                let pixel_center = self.pixel00_loc 
-                                            + (i as f64 * self.pixel_delta_u) 
-                                            + (j as f64 * self.pixel_delta_v);
-                let ray_direction = pixel_center - self.center;
-                let r = Ray::new(self.center, ray_direction);
-                let pixel_color = self.ray_color(&r, &world);
-                println!("{}", pixel_color.write_color());
+                let mut pixel_color = Color::new_default();
+                for _sample in 0..self.samples_per_pixel {
+                    let r = self.get_ray(i,j);
+                    pixel_color += self.ray_color(&r, world);
+                }
+
+                println!("{}", pixel_color.write_color(self.samples_per_pixel));
             }
         }
         eprintln!("Done.");
+    }
+
+    fn get_ray(&self, i: i32, j: i32) -> Ray {
+        let pixel_center = self.pixel00_loc 
+                                    + (i as f64 * self.pixel_delta_u) 
+                                    + (j as f64 * self.pixel_delta_v);
+        let pixel_sample = pixel_center - self.pixel_sample_square();
+        let ray_origin = self.center;
+        let ray_direction = pixel_sample - ray_origin;
+        return Ray::new(self.center, ray_direction);
+    }
+
+    fn pixel_sample_square(&self) -> Vec3 {
+        let px = -0.5 + rtweekend::random_double();
+        let py = -0.5 + rtweekend::random_double();
+        return (px * self.pixel_delta_u) + (py * self.pixel_delta_v);
     }
 
     fn initialize(&mut self) {
