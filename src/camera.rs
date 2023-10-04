@@ -106,7 +106,8 @@ impl Camera {
     fn ray_color(&self, ray:&Ray, world: &HittableList) -> Color {
         let (has_hit, rec) = world.hit(ray, &Interval::new(0.0, rtweekend::INFINITY));
         if has_hit {
-            return 0.5 * (rec.normal + Color::new(1.0,1.0,1.0));
+            let direction = Vec3::random_on_hemisphere(&rec.normal);
+            return 0.5 * self.ray_color(&Ray::new(rec.p, direction), world);
         }
 
         let unit_direction = Vec3::unit_vector(&ray.direction());

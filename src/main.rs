@@ -13,7 +13,10 @@ mod rtweekend;
 mod interval;
 mod camera;
 
+use crate::vec3::Vec3;
+
 fn main() {
+
     let mut world = HittableList::new_default();
     world.add(Box::new(Sphere::new(
         Point3::new(0.0, 0.0, -1.0),

@@ -2,7 +2,9 @@ use std::ops;
 use std::ops::Neg;
 use std::ops::Index;
 use std::ops::IndexMut;
+// use rtweekend;
 use crate::interval::Interval;
+use crate::rtweekend;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
@@ -16,6 +18,48 @@ impl Vec3 {
 
     pub fn new(e0: f64, e1: f64, e2: f64) -> Vec3 {
         Vec3 { e: [e0, e1, e2] }
+    }
+
+    pub fn random() -> Vec3 {
+        Vec3 {
+            e: [
+                rtweekend::random_double(),
+                rtweekend::random_double(),
+                rtweekend::random_double()
+            ]
+        }
+    }
+
+    pub fn random_rng(min: f64, max: f64) -> Vec3 {
+        Vec3 {
+            e: [
+                rtweekend::random_rng(min, max),
+                rtweekend::random_rng(min, max),
+                rtweekend::random_rng(min, max)
+            ]
+        }
+    }
+
+    pub fn random_in_unit_sphere() -> Vec3 {
+        loop {
+            let p = Vec3::random_rng(-1.0, 1.0);
+            if p.length_squared() < 1.0 {
+                return p;
+            }
+        }
+    }
+
+    pub fn random_unit_vector() -> Vec3 {
+        Vec3::unit_vector(&Vec3::random_in_unit_sphere())
+    }
+
+    pub fn random_on_hemisphere(normal: &Vec3) -> Vec3 {
+        let on_unit_sphere = Vec3::random_unit_vector();
+        if Vec3::dot(&on_unit_sphere, &normal) > 0.0 {
+            return on_unit_sphere;
+        } else {
+            return -on_unit_sphere;
+        }
     }
 
     pub fn x(&self) -> f64 {
@@ -53,7 +97,8 @@ impl Vec3 {
             ]
         }
     }
-
+    
+    #[inline]
     pub fn unit_vector(v: &Vec3) -> Vec3 {
         return *v / v.length()
     }
