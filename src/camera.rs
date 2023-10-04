@@ -11,6 +11,7 @@ pub struct Camera {
     pub aspect_ratio: f64,
     pub image_width: i32,
     pub samples_per_pixel: i32,
+    pub max_depth: i32,
     image_height: i32,
     center: Point3,
     pixel00_loc: Point3,
@@ -28,7 +29,8 @@ impl Camera {
             center: Point3::new_default(),
             pixel00_loc: Point3::new_default(),
             pixel_delta_u: Vec3::new_default(),
-            pixel_delta_v: Vec3::new_default()
+            pixel_delta_v: Vec3::new_default(),
+            max_depth: 10
         };
     }
 
@@ -47,7 +49,7 @@ impl Camera {
                 let mut pixel_color = Color::new_default();
                 for _sample in 0..self.samples_per_pixel {
                     let r = self.get_ray(i,j);
-                    pixel_color += self.ray_color(&r, world);
+                    pixel_color += self.ray_color(&r, self.max_depth, world);
                 }
 
                 println!("{}", pixel_color.write_color(self.samples_per_pixel));
@@ -103,11 +105,14 @@ impl Camera {
         self.pixel00_loc = viewport_upper_left + 0.5 * (self.pixel_delta_u + self.pixel_delta_v);
     }
 
-    fn ray_color(&self, ray:&Ray, world: &HittableList) -> Color {
+    fn ray_color(&self, ray:&Ray, depth: i32, world: &HittableList) -> Color {
+        if depth <= 0 {
+            return Color::new(0.0, 0.0, 0.0);
+        }
         let (has_hit, rec) = world.hit(ray, &Interval::new(0.0, rtweekend::INFINITY));
         if has_hit {
             let direction = Vec3::random_on_hemisphere(&rec.normal);
-            return 0.5 * self.ray_color(&Ray::new(rec.p, direction), world);
+            return 0.5 * self.ray_color(&Ray::new(rec.p, direction), depth-1, world);
         }
 
         let unit_direction = Vec3::unit_vector(&ray.direction());
