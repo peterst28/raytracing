@@ -62,32 +62,39 @@ impl Vec3 {
         }
     }
 
+    #[inline]
     pub fn x(&self) -> f64 {
         self.e[0]
     }
 
+    #[inline]
     pub fn y(&self) -> f64 {
         self.e[1]
     }
 
+    #[inline]
     pub fn z(&self) -> f64 {
         self.e[2]
     }
 
+    #[inline]
     pub fn length(&self) -> f64 {
         return f64::sqrt(self.length_squared())
     }
 
+    #[inline]
     pub fn length_squared(&self) -> f64 {
         return self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
     }
 
+    #[inline]
     pub fn dot(&self, v: &Vec3) -> f64 {
           self.e[0] * v.e[0]
         + self.e[1] * v.e[1]
         + self.e[2] * v.e[2]
     }
 
+    #[inline]
     pub fn cross(&self, v: &Vec3) -> Vec3 {
         Vec3 {
             e: [
@@ -103,6 +110,11 @@ impl Vec3 {
         return *v / v.length()
     }
 
+    #[inline]
+    pub fn linear_to_gamma(linear_component: f64) -> f64 {
+        return f64::sqrt(linear_component);
+    }
+
     pub fn write_color(&self, samples_per_pixel: i32) -> String {
 
         let mut r = self.x();
@@ -113,6 +125,11 @@ impl Vec3 {
         r *= scale;
         g *= scale;
         b *= scale;
+
+        // Apply linear to gamma transformation
+        r = Color::linear_to_gamma(r);
+        g = Color::linear_to_gamma(g);
+        b = Color::linear_to_gamma(b);
 
         format!("{} {} {}",
             (256.0 * Vec3::INTENSITY.clamp(r)) as u32,
